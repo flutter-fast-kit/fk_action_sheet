@@ -10,10 +10,8 @@ import 'package:flutter/material.dart';
 @immutable
 class BottomActionItem {
   final String title;
-  final TextStyle titleTextStyle;
-  final VoidCallback onPressed;
+  final TextStyle? titleTextStyle;
+  final VoidCallback? onPressed;
 
-  const BottomActionItem(
-      {@required this.title, this.titleTextStyle, this.onPressed})
-      : assert(title != null);
+  const BottomActionItem({required this.title, this.titleTextStyle, this.onPressed});
 }

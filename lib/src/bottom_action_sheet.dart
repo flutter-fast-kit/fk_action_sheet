@@ -21,98 +21,87 @@ import 'top_action_item.dart';
 /// [isDismissible] 点击背景是否可以关闭
 /// [enableDrag] 是否允许拖拽
 ///
-Future<T> showActionSheet<T>({
-  @required BuildContext context,
-  List<ActionItem> actions,
-  Widget content,
-  ChoiceConfig choiceConfig,
-  TopActionItem topActionItem,
-  BottomActionItem bottomActionItem,
-  Color barrierColor,
-  Color actionSheetColor,
+Future<T?> showActionSheet<T>({
+  required BuildContext context,
+  List<ActionItem>? actions,
+  Widget? content,
+  ChoiceConfig? choiceConfig,
+  TopActionItem? topActionItem,
+  BottomActionItem? bottomActionItem,
+  Color? barrierColor,
+  Color? actionSheetColor,
   bool isScrollControlled = false,
   bool isDismissible = true,
   bool enableDrag = true,
 }) async {
-  assert(context != null);
-  assert(barrierColor != Colors.transparent,
-      'The barrier color cannot be transparent.');
+  assert(barrierColor != Colors.transparent, 'The barrier color cannot be transparent.');
   // 当有头部并且有标题的时候, 设置顶部圆角
-  final RoundedRectangleBorder roundedRectangleBorder =
-      topActionItem != null && topActionItem.title != null
-          ? null
-          : const RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(10),
-              topRight: Radius.circular(10),
-            ));
+  final roundedRectangleBorder = topActionItem == null
+      ? null
+      : const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(10),
+          topRight: Radius.circular(10),
+        ));
 
   return showModalBottomSheet<T>(
-    context: context,
-    elevation: 0,
-    isScrollControlled: isScrollControlled,
-    isDismissible: isDismissible,
-    enableDrag: enableDrag,
-    backgroundColor:
-        actionSheetColor ?? Theme.of(context).dialogBackgroundColor,
-    barrierColor: barrierColor,
-    shape: roundedRectangleBorder,
-    builder: (BuildContext ctx) {
-      return _ActionSheet(
-          actions: actions,
-          content: content,
-          choiceConfig: choiceConfig,
-          topActionItem: topActionItem,
-          bottomActionItem: bottomActionItem);
-    },
-  );
+      context: context,
+      elevation: 0,
+      isScrollControlled: isScrollControlled,
+      isDismissible: isDismissible,
+      enableDrag: enableDrag,
+      backgroundColor: actionSheetColor ?? Theme.of(context).dialogBackgroundColor,
+      barrierColor: barrierColor,
+      shape: roundedRectangleBorder,
+      builder: (ctx) {
+        return _ActionSheet(
+            actions: actions,
+            content: content,
+            choiceConfig: choiceConfig,
+            topActionItem: topActionItem,
+            bottomActionItem: bottomActionItem);
+      });
 }
 
 /// 顶部组件
 class _TopActionItemWidget extends StatelessWidget {
   final TopActionItem topActionItem;
-  final VoidCallback onDonePress;
+  final VoidCallback? onDonePress;
 
-  const _TopActionItemWidget({this.topActionItem, this.onDonePress});
+  const _TopActionItemWidget({required this.topActionItem, this.onDonePress});
 
   @override
   Widget build(BuildContext context) {
-    if (topActionItem == null) {
-      return const SizedBox(height: 0, width: 0);
-    }
-
     final List<Widget> widgets = [];
-    if (topActionItem.title != null) {
-      widgets.addAll([
-        IconButton(
-            splashColor: Colors.transparent,
-            icon: const Icon(
-              Icons.close,
-              // size: 18,
-            ),
-            onPressed: () {
-              if (topActionItem.cancelAction != null) {
-                topActionItem.cancelAction();
-              } else {
-                Navigator.pop(context);
-              }
-            }),
-        Expanded(
-            child: Text(
-          topActionItem.title,
-          style: const TextStyle().merge(topActionItem.titleTextStyle),
-          textAlign: TextAlign.center,
-          // style: topActionItem.titleTextStyle.copyWith({}),
-        )),
-        IconButton(
-            splashColor: Colors.transparent,
-            icon: const Icon(
-              Icons.done,
-              // size: 18,
-            ),
-            onPressed: onDonePress),
-      ]);
-    }
+    widgets.addAll([
+      IconButton(
+          splashColor: Colors.transparent,
+          icon: const Icon(
+            Icons.close,
+            // size: 18,
+          ),
+          onPressed: () {
+            if (topActionItem.cancelAction != null) {
+              topActionItem.cancelAction!();
+            } else {
+              Navigator.pop(context);
+            }
+          }),
+      Expanded(
+          child: Text(
+        topActionItem.title,
+        style: const TextStyle().merge(topActionItem.titleTextStyle),
+        textAlign: TextAlign.center,
+        // style: topActionItem.titleTextStyle.copyWith({}),
+      )),
+      IconButton(
+          splashColor: Colors.transparent,
+          icon: const Icon(
+            Icons.done,
+            // size: 18,
+          ),
+          onPressed: onDonePress),
+    ]);
 
     if (topActionItem.desc != null) {
       widgets.add(Expanded(
@@ -120,9 +109,8 @@ class _TopActionItemWidget extends StatelessWidget {
               height: 50,
               alignment: Alignment.center,
               child: Text(
-                topActionItem.desc,
-                style: const TextStyle(color: Colors.black45, fontSize: 12)
-                    .merge(topActionItem.titleTextStyle),
+                topActionItem.desc!,
+                style: const TextStyle(color: Colors.black45, fontSize: 12).merge(topActionItem.titleTextStyle),
                 textAlign: TextAlign.center,
               ))));
     }
@@ -184,41 +172,33 @@ class _BottomActionItemWidget extends StatelessWidget {
 
 /// ActionSheet
 class _ActionSheet extends StatefulWidget {
-  final List<ActionItem> actions;
-  final Widget content;
-  final ChoiceConfig choiceConfig;
-  final TopActionItem topActionItem;
-  final BottomActionItem bottomActionItem;
+  final List<ActionItem>? actions;
+  final Widget? content;
+  final ChoiceConfig? choiceConfig;
+  final TopActionItem? topActionItem;
+  final BottomActionItem? bottomActionItem;
 
   @override
   _ActionSheetState createState() => _ActionSheetState();
 
-  const _ActionSheet(
-      {this.actions,
-      this.content,
-      this.choiceConfig,
-      this.topActionItem,
-      this.bottomActionItem});
+  const _ActionSheet({this.actions, this.content, this.choiceConfig, this.topActionItem, this.bottomActionItem});
 }
 
 class _ActionSheetState extends State<_ActionSheet> {
   List<Widget> widgets = [];
-  int _groupValue;
+  late int _groupValue;
   Set<int> _checkBoxValue = {};
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
       if (widget.choiceConfig != null) {
-        final List<ChoiceItem> selectedItems = widget.choiceConfig.items
-            .where((element) => element.isSelected == true)
-            .toList();
-        final List<int> selectedItemsIndex = selectedItems
-            .map((e) => widget.choiceConfig.items.indexOf(e))
-            .toList();
+        final List<ChoiceItem> selectedItems =
+            widget.choiceConfig!.items.where((element) => element.isSelected == true).toList();
+        final List<int> selectedItemsIndex = selectedItems.map((e) => widget.choiceConfig!.items.indexOf(e)).toList();
 
-        if (widget.choiceConfig.isCheckBox) {
+        if (widget.choiceConfig!.isCheckBox) {
           _checkBoxValue = selectedItemsIndex.toSet();
         } else {
           if (selectedItemsIndex.isNotEmpty) {
@@ -229,8 +209,8 @@ class _ActionSheetState extends State<_ActionSheet> {
 
       /// 添加中间操作按钮
       if (widget.actions != null) {
-        widget.actions.forEach((action) {
-          final index = widget.actions.indexOf(action);
+        widget.actions!.forEach((action) {
+          final index = widget.actions!.indexOf(action);
           widgets.add(Container(
             width: double.infinity,
             // color: Colors.redAccent,
@@ -250,7 +230,7 @@ class _ActionSheetState extends State<_ActionSheet> {
               ),
             ),
           ));
-          if (index < widget.actions.length - 1) {
+          if (index < widget.actions!.length - 1) {
             widgets.add(const Divider(
               height: 0,
             ));
@@ -259,7 +239,7 @@ class _ActionSheetState extends State<_ActionSheet> {
       }
 
       if (widget.content != null) {
-        widgets.add(widget.content);
+        widgets.add(widget.content!);
       }
 
       setState(() {});
@@ -269,23 +249,21 @@ class _ActionSheetState extends State<_ActionSheet> {
   List<Widget> _buildChoiceItems() {
     final List<Widget> choiceItems = [];
     if (widget.choiceConfig != null) {
-      widget.choiceConfig.items.forEach((item) {
-        final index = widget.choiceConfig.items.indexOf(item);
+      widget.choiceConfig!.items.forEach((item) {
+        final index = widget.choiceConfig!.items.indexOf(item);
 
         choiceItems.add(__ChoiceItemWidget<int>(
             value: index,
-            groupValue: widget.choiceConfig.isCheckBox
-                ? (_checkBoxValue.contains(index) ? index : -1)
-                : _groupValue,
+            groupValue: widget.choiceConfig!.isCheckBox ? (_checkBoxValue.contains(index) ? index : -1) : _groupValue,
             title: item.title,
             titleTextStyle: item.titleTextStyle,
             leftIcon: item.leftIcon,
             onPress: (dynamic idx) {
-              if (widget.choiceConfig.isCheckBox) {
+              if (widget.choiceConfig!.isCheckBox) {
                 if (_checkBoxValue.contains(idx as int)) {
-                  _checkBoxValue.remove(idx as int);
+                  _checkBoxValue.remove(idx);
                 } else {
-                  _checkBoxValue.add(idx as int);
+                  _checkBoxValue.add(idx);
                 }
               } else {
                 _groupValue = idx as int;
@@ -293,7 +271,7 @@ class _ActionSheetState extends State<_ActionSheet> {
 
               setState(() {});
             }));
-        if (index < widget.choiceConfig.items.length - 1) {
+        if (index < widget.choiceConfig!.items.length - 1) {
           choiceItems.add(const Divider(
             height: 0,
           ));
@@ -315,38 +293,34 @@ class _ActionSheetState extends State<_ActionSheet> {
           padding: MediaQuery.of(context).viewInsets,
           duration: const Duration(milliseconds: 275),
           curve: Curves.easeOutQuad,
-          child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _TopActionItemWidget(
-                  topActionItem: widget.topActionItem,
-                  onDonePress: () {
-                    if (widget.topActionItem.doneAction != null) {
-                      if (widget.choiceConfig != null) {
-                        if (widget.choiceConfig.isCheckBox) {
-                          widget.topActionItem
-                              .doneAction(_checkBoxValue.toList());
-                        } else {
-                          widget.topActionItem.doneAction([_groupValue]);
-                        }
-                      }
+          child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, mainAxisSize: MainAxisSize.min, children: [
+            if (widget.topActionItem != null) ...{
+              _TopActionItemWidget(
+                topActionItem: widget.topActionItem!,
+                onDonePress: () {
+                  if (widget.topActionItem!.doneAction != null) {
+                    if (widget.choiceConfig!.isCheckBox) {
+                      widget.topActionItem!.doneAction!(_checkBoxValue.toList());
                     } else {
-                      Navigator.pop(context);
+                      widget.topActionItem!.doneAction!([_groupValue]);
                     }
-                  },
-                ),
-                Flexible(
-                  child: SingleChildScrollView(
-                      child: Column(
-                    children: [
-                      ...widgets,
-                      ..._buildChoiceItems(),
-                    ],
-                  )),
-                ),
-                _BottomActionItemWidget(widget.bottomActionItem)
-              ]),
+                  } else {
+                    Navigator.pop(context);
+                  }
+                },
+              ),
+            },
+            Flexible(
+              child: SingleChildScrollView(
+                  child: Column(
+                children: [
+                  ...widgets,
+                  ..._buildChoiceItems(),
+                ],
+              )),
+            ),
+            if (widget.bottomActionItem != null) ...{_BottomActionItemWidget(widget.bottomActionItem!)}
+          ]),
         ),
       ),
     );
@@ -358,10 +332,10 @@ class __ChoiceItemWidget<T> extends StatefulWidget {
   final T value;
   final T groupValue;
   final String title;
-  final TextStyle titleTextStyle;
-  final Widget leftIcon;
-  final Widget selectedIcon;
-  final Widget unselectedIcon;
+  final TextStyle? titleTextStyle;
+  final Widget? leftIcon;
+  final Widget? selectedIcon;
+  final Widget? unselectedIcon;
   final ValueChanged<dynamic> onPress;
 
   const __ChoiceItemWidget(
@@ -369,10 +343,10 @@ class __ChoiceItemWidget<T> extends StatefulWidget {
       this.titleTextStyle,
       this.selectedIcon,
       this.unselectedIcon,
-      @required this.title,
-      @required this.onPress,
-      @required this.value,
-      @required this.groupValue});
+      required this.title,
+      required this.onPress,
+      required this.value,
+      required this.groupValue});
 
   @override
   _ChoiceItemWidgetState createState() => _ChoiceItemWidgetState();
@@ -382,7 +356,7 @@ class _ChoiceItemWidgetState extends State<__ChoiceItemWidget> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {});
+    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {});
   }
 
   @override
@@ -399,7 +373,7 @@ class _ChoiceItemWidgetState extends State<__ChoiceItemWidget> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             if (widget.leftIcon != null)
-              widget.leftIcon
+              widget.leftIcon!
             else
               const SizedBox(
                 height: 0,
@@ -416,15 +390,11 @@ class _ChoiceItemWidgetState extends State<__ChoiceItemWidget> {
               ),
             )),
             if (widget.selectedIcon != null)
-              widget.value == widget.groupValue
-                  ? widget.selectedIcon
-                  : widget.unselectedIcon
+              widget.value == widget.groupValue ? widget.selectedIcon! : widget.unselectedIcon!
             else
               Icon(
                 Icons.check_box,
-                color: widget.value == widget.groupValue
-                    ? Colors.blueAccent
-                    : Colors.transparent,
+                color: widget.value == widget.groupValue ? Colors.blueAccent : Colors.transparent,
               )
           ],
         ),
