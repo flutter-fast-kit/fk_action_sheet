@@ -257,6 +257,8 @@ class _ActionSheetState extends State<_ActionSheet> {
             groupValue: widget.choiceConfig!.isCheckBox ? (_checkBoxValue.contains(index) ? index : -1) : _groupValue,
             title: item.title,
             titleTextStyle: item.titleTextStyle,
+            selectedIcon: widget.choiceConfig.selectedIcon,
+            unselectedIcon: widget.choiceConfig.unselectedIcon,
             leftIcon: item.leftIcon,
             onPress: (dynamic idx) {
               if (widget.choiceConfig!.isCheckBox) {
